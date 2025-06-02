@@ -11,7 +11,7 @@ export default function LoginComponent() {
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    const { headers, status } = await clientHttpClient('/api/login', {
+    const { status } = await clientHttpClient('/api/login', {
       method: 'POST',
       body: {
         email,
@@ -21,13 +21,9 @@ export default function LoginComponent() {
     });
 
     if (status == 200) {
-      const token = headers.get('authorization');
-      if (token) {
-        localStorage.setItem('token', token);
-      }
-      redirect('/dashboard')
+      redirect('/test-cases')
     } else {
-      setError("Login failed, if else.");
+      setError("Login failed, try again.");
     }
   }
 

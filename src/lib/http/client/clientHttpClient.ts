@@ -15,13 +15,6 @@ export default async function clientHttpClient<TResponse, TBody = unknown>(
         'Content-Type': 'application/json',
     };
 
-    if (auth && typeof window !== 'undefined') {
-        const token = localStorage.getItem('token');
-        if (token) {
-            headers['Authorization'] = `${token}`;
-        }
-    }
-
     const fetchOptions: RequestInit = {
         method,
         headers,

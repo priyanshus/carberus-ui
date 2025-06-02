@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import { Noto_Sans} from 'next/font/google';
+import './global.css';
+
+const font = Noto_Sans({
+  weight: '400',
+  subsets: ['latin'],
+})
+
 
 export const metadata: Metadata = {
   title: "Carberus",
@@ -12,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${font.className} bg-background-light`}>
       <body>
         {children}
       </body>

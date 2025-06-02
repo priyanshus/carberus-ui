@@ -1,4 +1,4 @@
-import SignupPage from "./signup/page";
+import SignupPage from "./(public)/signup/page";
 
 export default function Home() {
   return (
