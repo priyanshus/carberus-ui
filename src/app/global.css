@@ -6,6 +6,8 @@
   --color-background-dark: oklch(0.9109 0.007 247.9);
   --color-background-light: oklch(0.9191 0.0029 84.56);
   --color-border-grey: oklch(0.7692 0.0145 248.02);
+
+  
   --color-danger-higlighter: ;
   --color-cta-highlighter: ;
   --color-success-highlighter: ;
@@ -13,11 +15,11 @@
 
 @layer utilities {
   .btn {
-    @apply w-16 inline-flex items-center justify-center rounded-md px-4 py-2 bg-primary-800 text-white text-sm font-normal shadow-xl hover:cursor-pointer hover:font-bold;
+    @apply w-[180] inline-flex items-center justify-center rounded-md px-4 py-2 border border-primary-800 bg-primary-800 text-white text-sm font-normal hover:cursor-pointer hover:font-bold;
   }
 
   .btnSecondry {
-    @apply w-16 inline-flex items-center justify-center rounded-md px-4 py-2  text-primary-500 border border-primary-500 text-sm font-normal shadow-md hover:cursor-pointer hover:font-bold;
+    @apply w-[180] inline-flex items-center justify-center rounded-md px-4 py-2  text-primary-500 border border-primary-500 text-sm font-normal hover:cursor-pointer hover:font-bold;
   }
 
   .labelText {

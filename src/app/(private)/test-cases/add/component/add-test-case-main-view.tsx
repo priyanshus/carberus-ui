@@ -1,4 +1,4 @@
-import CardComponent from "@/app/resusable/card.component";
+import CardComponent from "@/app/resusable/card-layout/card.component";
 import FormInputBox from "@/app/resusable/form.input.component";
 
 

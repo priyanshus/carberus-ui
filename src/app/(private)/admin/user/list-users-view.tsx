@@ -1,56 +1,86 @@
-'use client'
-import CardComponent from '@/app/resusable/card.component';
-import PrimaryButtonComponent from '@/app/resusable/primary.button.component';
-import SecondryButtonComponent from '@/app/resusable/secondry.button.component';
-import React, { useState } from 'react'
-import UserEditView from './user-edit-view';
-
-const users = [
-  { name: 'Jane Doe', email: 'jane@example.com', role: 'Admin' },
-  { name: 'John Smith', email: 'john@company.com', role: 'Editor' },
-  { name: 'Sarah Lee', email: 'sarah@domain.com', role: 'Viewer' },
-];
+"use client";
+import CardComponent from "@/app/resusable/card-layout/card.component";
+import React, { useState, useEffect } from "react";
+import UserView from "./user-view";
+import UserHeader from "./user-header";
+import clientHttpClient from "@/lib/http/client/clientHttpClient";
+import { User, Users } from "@/app/service/user/user.model";
+import UserEditView from "./user-edit-view";
 
 const ListUsersView = () => {
   const [isEditableMode, setEditableMode] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [editableUserId, setEditableUserId] = useState<string | null>(null);
 
-  function onEditClick() {
-    setEditableMode(true);
-  }
+  useEffect(() => {
+    clientHttpClient<User[]>("/api/users", {
+      method: "GET",
+    })
+      .then((response) => {
+        console.log("Fetched users:", response);
+        const { data, status } = response;
+        if (status !== 200) {
+          throw new Error("Failed to fetch users");
+        }
+        setUsers(data);
+        setFilteredUsers(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log("Search term changed:", searchTerm);
+    const filtered = users.filter((user) => {
+      const email = user.email.toLowerCase();
+      return email.includes(searchTerm.toLowerCase());
+    });
+    setFilteredUsers(filtered);
+  }, [searchTerm]);
+
+  const handleEditUser = (user: User, enableEdit: boolean) => {
+    console.log("Editing user:", user);
+    setEditableMode(enableEdit);
+    setEditableUserId(user.id);
+  };
 
   return (
-
     <div>
-      <CardComponent header='Users'>
-        <div className="p-2">
-          {/* Header Row */}
-          <div className="grid grid-cols-4 font-semibold text-primary-800 border-b border-border-grey ">
-            <div>Name</div>
-            <div>Email</div>
-            <div>Role</div>
-            <div className="text-right">Actions</div>
-          </div>
-
-          {/* Data Rows */}
-          {users.map((user, idx) => (
-            <div
-              key={idx}
-              className="items-center place-content-center mt-2 mb-2 grid grid-cols-4 border-b border-border-grey text-sm text-primary-800 hover:bg-gray-50 transition"
-            >
-              {isEditableMode ? (<div><input placeholder={user.name} className='border border-primary-500 rounded-md p-1'></input></div>): (<div>{user.name}</div>)}
-              <div className="truncate">{user.email}</div>
-              <div className="font-bold">{user.role}</div>
-              <div className="flex justify-end gap-2 mb-2">
-                <PrimaryButtonComponent labelText='Edit' onClickAction={onEditClick} />
-                <SecondryButtonComponent labelText='Delete' onClickAction={onEditClick} />
-              </div>
+      <CardComponent
+        header={
+          <UserHeader
+            userCount={filteredUsers.length}
+            onSearchChange={setSearchTerm}
+          />
+        }
+      >
+        <div className="grid grid-cols-4 gap-2 border-b border-border-grey font-bold">
+          <div>Full Name</div>
+          <div>Email</div>
+          <div>Role</div>
+        </div>
+        {filteredUsers &&
+          filteredUsers.map((user, index) => (
+            <div key={index}>
+              {isEditableMode && user.id == editableUserId ? (
+                <UserEditView
+                  user={user}
+                  onCancel={() => handleEditUser(user, false)}
+                />
+              ) : (
+                <UserView
+                  user={user}
+                  onEdit={(user) => handleEditUser(user, true)}
+                />
+              )}
             </div>
           ))}
-        </div>
       </CardComponent>
-
     </div>
   );
-}
+};
 
 export default ListUsersView;

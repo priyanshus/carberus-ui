@@ -8,7 +8,10 @@ const STATIC_PREFIXES = [
   '/manifest.json',
   '/images',
   '/fonts',
-  '/api/public' // <-- add public APIs here if needed
+  '/login',
+  '/signup',
+  '/api/login',
+  '/api/singup' // <-- add public APIs here if needed
 ];
 
 function isPublic(pathname: string) {
@@ -21,6 +24,7 @@ function isStatic(pathname: string) {
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  console.log('Middleware triggered for:', pathname);
   const token = req.cookies.get('token');
 
   if (isPublic(pathname) || isStatic(pathname)) {

@@ -1,4 +1,4 @@
-import User from "./user.model";
+import {User} from "./user.model";
 
 export function isCurrentUserHasAdminRole(user: User): boolean {
     const isAdminRolePresent = user.roles.filter(role => role.toLowerCase() == 'admin');
