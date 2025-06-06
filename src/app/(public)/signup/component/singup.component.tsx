@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { SignupRequestDto, SignupResponseDto } from "../dto/signup.dto";
 import Link from "next/link";
-import clientHttpClient from "@/lib/http/client/clientHttpClient";
+import clientFetch from "@/lib/http/client/clientHttpClient";
 
 export default function SignupPage() {
     const [isSignupSuccess, setSignupSuccess] = useState(false);
@@ -34,7 +34,7 @@ export default function SignupPage() {
             return;
         }
         try {
-            const { status, data } = await clientHttpClient<SignupResponseDto, SignupRequestDto>("/signup", {
+            const { status, data } = await clientFetch<SignupResponseDto, SignupRequestDto>("/signup", {
                 body: formData,
                 method: 'POST',
                 auth: false

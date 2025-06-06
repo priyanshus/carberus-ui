@@ -7,8 +7,8 @@
   --color-background-light: oklch(0.9191 0.0029 84.56);
   --color-border-grey: oklch(0.7692 0.0145 248.02);
 
-  
-  --color-danger-higlighter: ;
+  --color-success-higlighter: oklch(61.69% 0.097 196.70);
+  --color-danger-higlighter: oklch(42.44% 0.136 7.24);
   --color-cta-highlighter: ;
   --color-success-highlighter: ;
 }
@@ -24,5 +24,21 @@
 
   .labelText {
     @apply font-medium text-[15px];
+  }
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 0, 0, 0.1); /* base */
+  border-top: 2px solid var(--color-primary-500); /* spinner color */
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

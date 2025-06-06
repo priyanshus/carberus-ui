@@ -1,5 +1,5 @@
 "use client";
-import clientHttpClient from "@/lib/http/client/clientHttpClient";
+import clientFetch from "@/lib/http/client/clientHttpClient";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 
@@ -11,7 +11,7 @@ export default function LoginComponent() {
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    const { status } = await clientHttpClient('/api/login', {
+    const { status } = await clientFetch('/api/login', {
       method: 'POST',
       body: {
         email,

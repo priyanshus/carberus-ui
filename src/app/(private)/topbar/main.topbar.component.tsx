@@ -1,5 +1,5 @@
 'use client';
-import clientHttpClient from "@/lib/http/client/clientHttpClient";
+import clientFetch from "@/lib/http/client/clientHttpClient";
 import { redirect } from "next/navigation";
 
 
@@ -8,7 +8,7 @@ export default function MainTopBarComponent() {
 
 
   function redirectToLogin() {
-    clientHttpClient('/api/logout').then(_res => {
+    clientFetch('/api/logout').then(_res => {
       redirect('/login')
     }).catch(_err => {
       redirect('/login');

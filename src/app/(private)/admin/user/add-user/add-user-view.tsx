@@ -1,73 +1,115 @@
+'use client'
+
+import { useState } from "react";
 import CardComponent from "@/app/resusable/card-layout/card.component";
 import PrimaryInputBox from "../../../../resusable/primary.input.component";
 import PrimaryButtonComponent from "@/app/resusable/primary.button.component";
-import SecondryButtonComponent from "@/app/resusable/secondry.button.component";
-import { useState } from "react";
-import React from "react";
-import { useFormState } from "react-dom";
-import { set } from "zod/v4";
-import { time } from "console";
-import clientHttpClient from "@/lib/http/client/clientHttpClient";
-import { fi } from "zod/v4/locales";
+import PrimaryListBoxComponent from "@/app/resusable/primary.llistbox.component";
+import { USER_ROLES, UserRole } from "@/app/appConstants/user.roles";
+import { addUser, fetchUsers } from "../service/user.service";
+import getErrorMessage from "@/app/appConstants/app.errors.mapping";
+import ErrorToastComponent from "@/app/resusable/error.toast.component";
+import { CheckIcon } from "@radix-ui/react-icons";
+import PopupCardComponent from "@/app/resusable/card-layout/popup.card.component";
 
-export default function AddUserView() {
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+interface AddUserViewProps {
+  open: boolean
+  onClose: () => void;
+}
+
+export default function AddUserView({ open, onClose }: AddUserViewProps) {
+
+  const [form, setForm] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    role: USER_ROLES[0] as UserRole,
+  });
+
   const [loading, setLoading] = useState(false);
-  const [saveUserResponse, setSaveUserResponse] = useState("");
-  const password = "123456";
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const getAllUsers = async () => {
+    try {
+      const data = await fetchUsers();
+    } catch (err: any) {
+      const errorMessage = getErrorMessage(err.message);
+    }
+  };
 
   async function saveUser(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
-    
-    const { status } = await clientHttpClient('/api/user', {
-          method: 'POST',
-          body: {
-            email,
-            firstName,
-            lastName,
-            password
-          }
-        });
-    if (status !== 201) {
-        setLoading(false);
-        setSaveUserResponse(`Failed to save user ${email}. Please try again.`);
-    } else if (status === 201) {
-        setLoading(false);
-        setEmail("");
-        setFirstName(""); 
-        setLastName("");
-        setSaveUserResponse(`Successfully added ${email}.`);
-    } else {
-        setSaveUserResponse(`Something went wrong while saving user ${email}. Please try again.`);
-        setLoading(false);
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    const role = form.role.replaceAll(" ", "").toUpperCase();
+
+    try {
+      await addUser({
+        email: form.email,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        password: "123456",
+        role,
+      });
+
+      setSuccessMessage(`Successfully added ${form.email}.`);
+      setForm({
+        email: "",
+        firstName: "",
+        lastName: "",
+        role: USER_ROLES[0],
+      });
+
+      await getAllUsers();
+    } catch (err: any) {
+      setErrorMessage(getErrorMessage(err.message));
+    } finally {
+      setLoading(false);
     }
+  }
 
   return (
     <div>
-      <CardComponent
-        header={
-          <h1 className="text-xl font-semibold text-primary-800">Add User</h1>
-        }
+      <PopupCardComponent
+        isOpen={open}
+        onClose={onClose}
+        title="Add User"
       >
-        <div className="grid grid-cols-2 gap-2">
+        <div>
           <form id="addUserForm" onSubmit={saveUser}>
-            <label className="block text-sm text-primary-500 font-bold">
-              Email
-            </label>
-            <div className="my-1 w-lg">
-              <PrimaryInputBox id="email" type="email" required onChange={e => setEmail(e)} placeholder="Enter Email" />
+            <div className="mb-4">
+              <label className="block text-sm text-primary-500 font-bold">
+                Email
+              </label>
+              <div className="my-1">
+                <PrimaryInputBox
+                  id="email"
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e })}
+                  placeholder="Enter Email"
+                />
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 w-lg my-2">
+            <div className="grid grid-cols-2 gap-2 mb-4">
               <div className="flex flex-col">
                 <label className="block text-sm text-primary-500 font-bold">
                   First Name
                 </label>
                 <div className="my-1">
-                  <PrimaryInputBox id="fname" type="text" onChange={e => setFirstName(e)} required placeholder="Enter First Name" />
+                  <PrimaryInputBox
+                    id="fname"
+                    type="text"
+                    required
+                    value={form.firstName}
+                    onChange={(e) => setForm({ ...form, firstName: e })}
+                    placeholder="Enter First Name"
+                  />
                 </div>
               </div>
 
@@ -76,24 +118,40 @@ export default function AddUserView() {
                   Last Name
                 </label>
                 <div className="my-1">
-                  <PrimaryInputBox id="lname" type="text" onChange={e => setLastName(e)} placeholder="Enter Last Name" />
+                  <PrimaryInputBox
+                    id="lname"
+                    type="text"
+                    value={form.lastName}
+                    onChange={(e) => setForm({ ...form, lastName: e })}
+                    placeholder="Enter Last Name"
+                  />
                 </div>
               </div>
-
-              <div className="flex flex-row gap-2 mt-8">
-                <PrimaryButtonComponent disabled={loading} labelText="Save" />
-                <SecondryButtonComponent disabled={loading} labelText="Cancel" />
-              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm text-primary-500 font-bold mb-1">
+                Select Role
+              </label>
+              <PrimaryListBoxComponent
+                options={USER_ROLES}
+                onChange={(role) => setForm({ ...form, role })}
+                value={form.role}
+              />
+            </div>
+            <div className="flex flex-row gap-2 mt-10 justify-end">
+              <PrimaryButtonComponent icon={CheckIcon} disabled={loading} labelText="Add User" />
             </div>
           </form>
         </div>
 
-        <div className="col-span-2">
-          {saveUserResponse && (
-            <div className="text-primary-800">{saveUserResponse}</div>
+        <div>
+          {successMessage && (
+            <div className="text-success-higlighter">{successMessage}</div>
           )}
         </div>
-      </CardComponent>
+      </PopupCardComponent>
+
+      {errorMessage && <ErrorToastComponent errorMessage={errorMessage} />}
     </div>
   );
 }

@@ -6,10 +6,11 @@ export interface RequestOptions<TBody> extends Omit<RequestInit, 'body' | 'metho
   auth?: boolean;
   retries?: number;
   backoff?: number;
+  headers?: HeadersInit;
 }
 
 export interface HttpResponse<T> {
-  data: T;
+  data?: T;
   headers: Headers;
   status: number;
 }

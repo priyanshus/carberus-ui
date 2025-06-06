@@ -1,48 +1,37 @@
-import { HttpResponse, RequestOptions } from "../clientTypes";
+import { RequestOptions } from "../clientTypes";
 
-export default async function clientHttpClient<TResponse, TBody = unknown>(
-    url: string,
-    options: RequestOptions<TBody> = {}
-): Promise<HttpResponse<TResponse>> {
-    const {
-        method = 'GET',
-        body,
-        auth = true,
-        ...rest
-    } = options;
+export default async function clientFetch<TBody = unknown>(
+  url: string,
+  options: RequestOptions<TBody> = {}
+): Promise<Response> {
+  const {
+    method = 'GET',
+    body,
+    auth = true,
+    ...rest
+  } = options;
 
-    const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-    };
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
 
-    const fetchOptions: RequestInit = {
-        method,
-        headers,
-        ...rest,
-    };
+  const fetchOptions: RequestInit = {
+    method,
+    headers,
+    ...rest,
+  };
 
-    if (body !== undefined) {
-        fetchOptions.body = JSON.stringify(body);
-    }
+  if (body !== undefined) {
+    fetchOptions.body = JSON.stringify(body);
+  }
 
-    const response = await fetch(url, fetchOptions);
-    return await buildResponse(response);
-}
-
-async function buildResponse<TResponse>(response: Response): Promise<HttpResponse<TResponse>> {
   try {
-    const responseData = await response.json();
-    return {
-      data: responseData,
-      headers: response.headers,
-      status: response.status,
-    };
+    const response = await fetch(url, fetchOptions);
+    return response;
   } catch (error) {
-    return {
-      data: {} as TResponse,
-      headers: response.headers,
-      status: response.status,
-    };
+    throw error;
   }
 }
+
+
 
