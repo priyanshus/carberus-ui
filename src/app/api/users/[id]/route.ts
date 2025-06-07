@@ -1,14 +1,14 @@
 import bffFetch from "@/lib/http/server/serverHttpClient";
+import { NextRequest } from "next/server";
 
 
-export async function PUT(req: Request, { params }: { params: { id: string } } ): Promise<Response> {
-  const endpoint = `${process.env.BACKEND_HOST}/users/${params.id}`;
+export async function DELETE(req: NextRequest): Promise<Response> {
+  const id = req.nextUrl.pathname.split('/').pop();
+  const endpoint = `${process.env.BACKEND_HOST}/users/${id}`;
   const cookie = req.headers.get('cookie') || '';
-  const payload = await req.json() || '';
 
   const response = await bffFetch(endpoint, {
-    method: 'PUT',
-    body: payload,
+    method: 'DELETE',
     headers: {
       'cookie': cookie
     }
@@ -22,12 +22,15 @@ export async function PUT(req: Request, { params }: { params: { id: string } } )
   });
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } } ): Promise<Response> {
-  const endpoint = `${process.env.BACKEND_HOST}/users/${params.id}`;
+export async function PUT(req: NextRequest ): Promise<Response> {
+  const id = req.nextUrl.pathname.split('/').pop();
+  const endpoint = `${process.env.BACKEND_HOST}/users/${id}`;
   const cookie = req.headers.get('cookie') || '';
+  const payload = await req.json() || '';
 
   const response = await bffFetch(endpoint, {
-    method: 'DELETE',
+    method: 'PUT',
+    body: payload,
     headers: {
       'cookie': cookie
     }

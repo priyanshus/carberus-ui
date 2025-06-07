@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from "react";
-import CardComponent from "@/app/resusable/card-layout/card.component";
 import PrimaryInputBox from "../../../../resusable/primary.input.component";
 import PrimaryButtonComponent from "@/app/resusable/primary.button.component";
 import PrimaryListBoxComponent from "@/app/resusable/primary.llistbox.component";
@@ -11,6 +10,7 @@ import getErrorMessage from "@/app/appConstants/app.errors.mapping";
 import ErrorToastComponent from "@/app/resusable/error.toast.component";
 import { CheckIcon } from "@radix-ui/react-icons";
 import PopupCardComponent from "@/app/resusable/card-layout/popup.card.component";
+import SuccessMessageComponent from '../../../../resusable/feedback/success.message.component';
 
 interface AddUserViewProps {
   open: boolean
@@ -144,9 +144,9 @@ export default function AddUserView({ open, onClose }: AddUserViewProps) {
           </form>
         </div>
 
-        <div>
+        <div className="mt-4">
           {successMessage && (
-            <div className="text-success-higlighter">{successMessage}</div>
+            <SuccessMessageComponent message={successMessage} />
           )}
         </div>
       </PopupCardComponent>

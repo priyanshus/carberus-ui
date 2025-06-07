@@ -1,6 +1,5 @@
 import PrimaryButtonComponent from "@/app/resusable/primary.button.component";
 import { PersonIcon } from '@radix-ui/react-icons';
-import { redirect } from "next/navigation";
 import { useState } from "react";
 import AddUserView from "./add-user/add-user-view";
 

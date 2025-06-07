@@ -66,6 +66,11 @@ export const sidebarMenuItems: MenuItem[] = [
         id: 'user',
         displayText: 'User',
         href: '/admin/user'
+      },
+      {
+        id: 'project',
+        displayText: 'Project',
+        href: '/admin/project'
       }
     ]
   }

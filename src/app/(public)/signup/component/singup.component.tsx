@@ -34,18 +34,18 @@ export default function SignupPage() {
             return;
         }
         try {
-            const { status, data } = await clientFetch<SignupResponseDto, SignupRequestDto>("/signup", {
+            await clientFetch("/signup", {
                 body: formData,
                 method: 'POST',
                 auth: false
             });
-            if (status != 201 || !data) {
-                setSignupStatus("Signup failed, please try again");
-                return;
-            }
+            // if (status != 201 || !data) {
+            //     setSignupStatus("Signup failed, please try again");
+            //     return;
+            // }
             setFormData({ email: "", password: "", confirmPassword: "", roles: []});
             setSignupSuccess(true);
-            setSignupStatus(`Successfully registerd ${data.email}`);
+            setSignupStatus(`Successfully registerd`);
         } catch (e) {
             setSignupStatus("Signup failed, please try again");
             console.error(e);

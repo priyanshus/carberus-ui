@@ -26,7 +26,7 @@ export default function UserView({ user, onEdit, onDelete }: UserViewProps) {
         )}>
             <div className="col-span-1">{user.firstName} {user.lastName}</div>
             <div className="col-span-1">{user.email}</div>
-            <div className="col-span-1 font-bold">{user.roles ? user.roles.join(", ") : 'NO ROLE' }</div>
+            <div className="col-span-1 font-bold">{user.role ? user.role : 'NO ROLE' }</div>
             <div className="col-span-1 gap-2 flex justify-end">
                 {loading && <LoadingSpinner />}
                 {mode === 'default' && (<PrimaryButtonComponent labelText="Change Role" icon={Pencil1Icon} onClickAction={() => { onEdit?.(user); setMode('confirming') }} />)}
