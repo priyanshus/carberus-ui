@@ -18,7 +18,7 @@ export default function PrimaryButtonComponent({
 }: ButtonProperties) {
     return (
         <button type='submit' onClick={onClickAction} className={`btn ${additionalClasses}`} disabled={disabled}>
-            {Icon && <Icon className="mx-1 icon" />}
+            {Icon && <Icon className='w-4 h-4 mr-0.5'/>}
             {labelText}
         </button>
     );

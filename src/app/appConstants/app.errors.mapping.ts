@@ -5,7 +5,8 @@ const BFF_ERROR_MAP = new Map<string, string>([
     ['UNAUTHORIZED', 'You are not authorized to take this action.'],
     ['UNMAPPED', 'Something went wrong, try again.'],
     ['NO_USERS_FOUND', 'No users found in the system'],
-    ['TEST_CYCLE_CLOSED', 'Testing cycle closed.']
+    ['TEST_CYCLE_CLOSED', 'Testing cycle closed.'],
+    ['PROJECT_TITLE_ALREADY_EXIST', 'Project title already exists, please try different.'],
 ]);
 
 export default function getErrorMessage(errorCode: string): string {

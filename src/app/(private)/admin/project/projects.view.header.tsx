@@ -1,16 +1,50 @@
-'use client';
+"use client";
+
+import PrimaryButtonComponent from "@/app/resusable/primary.button.component";
+import { useState } from "react";
+import AddProjectView from "./add.project.view";
+import { User } from "@/app/service/user/user.model";
+
 interface ProjectsViewHeaderProps {
-  
+  users?: User[];
 }
 
-export default function ProjectsViewHeader() {
+export default function ProjectsViewHeader({ users }: ProjectsViewHeaderProps) {
+  const [showAddProjectPopup, setShowAddProjectPopup] = useState(false);
+
   return (
-    <div className="flex flex-row items-center overflow-auto w-full">
-      <div className="flex gap-2 h-fit items-center">
-        <h1 className="text-xl font-semibold text-primary-800">
+    <div className="flex flex-row items-center w-full">
+      <div className="flex flex-col h-fit">
+        <h1 className="text-lg font-bold text-primary-800">
           Project Management
         </h1>
+        <p className="text-sm text-secondry">
+          Manage your projects efficiently.
+        </p>
       </div>
+
+      <div className="mx-auto"></div>
+
+      <input
+        type="text"
+        id="filterInput"
+        onChange={(e) => console.log("Search term:", e.target.value)}
+        placeholder="Search projects..."
+        className="input-box mr-2"
+      />
+
+      <PrimaryButtonComponent
+        labelText="Add Project"
+        onClickAction={() => setShowAddProjectPopup(true)}
+      />
+
+      {showAddProjectPopup && (
+        <AddProjectView
+          users={users}
+          open={showAddProjectPopup}
+          onClose={() => setShowAddProjectPopup(false)}
+        />
+      )}
     </div>
   );
 }

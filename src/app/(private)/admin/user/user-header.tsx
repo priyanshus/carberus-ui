@@ -28,18 +28,16 @@ export default function UserHeader({ userCount, onSearchChange }: UserHeaderProp
 
       </div>
 
-      <div className="justify-end place-items-center items-center">
         <input
           type="text"
           id="filterInput"
           onChange={(e) => { onSearchChange && onSearchChange(e.target.value) }}
           placeholder="Search users..."
-          className="h-full border mt-0.5 py-2 px-2 w-[300] border-primary-500 rounded-sm text-sm mr-2 gap-1 focus:outline-none focus:border-primary-800"
+          className="input-box mr-2"
         />
-        <PrimaryButtonComponent additionalClasses="h-full" onClickAction={() => setShowPopup(true)} labelText="Add User" icon={PersonIcon}></PrimaryButtonComponent>
+        <PrimaryButtonComponent onClickAction={() => setShowPopup(true)} labelText="Add User" icon={PersonIcon}></PrimaryButtonComponent>
 
-      </div>
-
+      
       {showPopup && (
         <AddUserView
           open={showPopup}

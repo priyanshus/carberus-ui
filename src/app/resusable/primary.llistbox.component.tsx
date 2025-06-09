@@ -1,4 +1,4 @@
-import { Listbox } from '@headlessui/react'
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react'
 import React from 'react'
 
 interface DropdownSelectProps<T extends string> {
@@ -17,25 +17,24 @@ export default function PrimaryListBoxComponent<T extends string>({
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="w-full border border-primary-500 rounded-sm py-2 px-2 text-sm text-left bg-white focus:outline-none">
+        <ListboxButton className="w-full border border-gray-200 rounded-sm py-2 px-2 text-sm text-left bg-white focus:outline-none">
           {value || placeholder}
-        </Listbox.Button>
+        </ListboxButton>
 
-        <Listbox.Options className="absolute mt-1 w-full bg-background-light border border-gray-300 rounded-sm shadow-lg z-10 max-h-60 overflow-auto">
+        <ListboxOptions className="absolute z-10 mt-2 w-40 bg-white border border-border-highlighter rounded-md flex flex-col text-sm shadow-lg overflow-auto">
           {options.map(option => (
-            <Listbox.Option
+            <ListboxOption
               key={option}
               value={option}
-              className={({ active, selected }) =>
-                `cursor-pointer px-3 py-2 text-sm
-                ${active ? 'bg-primary-100 text-primary-900' : ''}
-                ${selected ? 'font-semibold' : 'font-normal'}`
+              className={({selected}) =>
+                `px-4 py-2 hover:bg-background-higlighter cursor-pointer text-sm {
+                  ${selected ? 'font-extrabold text-primary-500' : 'text-primary-800'}`
               }
             >
               {option}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   )

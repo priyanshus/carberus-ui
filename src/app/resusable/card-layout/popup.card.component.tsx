@@ -17,7 +17,7 @@ const PopupCardComponent = ({ isOpen, onClose, title, children }: PopupCardCompo
             <div className="z-50 bg-white rounded-lg p-6 shadow-2xl">
                 <div className='flex flex-row mb-6'>
                     {title && (
-                        <DialogTitle className="text-xl font-semibold text-primary-500">
+                        <DialogTitle className="font-semibold text-primary-800">
                             {title}
                         </DialogTitle>
                     )}

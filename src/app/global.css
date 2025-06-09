@@ -3,27 +3,39 @@
 @theme {
   --color-primary-800: oklch(0.2221 0 0);
   --color-primary-500: oklch(0.4276 0.0147 248.17);
+  --color-secondry: var(--color-gray-500);
+  
   --color-background-dark: oklch(0.9109 0.007 247.9);
-  --color-background-light: oklch(0.9191 0.0029 84.56);
+  --color-background-light: var(--color-gray-200);
+  
   --color-border-grey: oklch(0.7692 0.0145 248.02);
 
+  --color-border-highlighter: var(--color-gray-200);
+  --color-background-higlighter: var(--color-gray-100);
+
+  --color-danger-background-highlighter: var(--color-red-100);
   --color-success-higlighter: oklch(61.69% 0.097 196.70);
   --color-danger-higlighter: oklch(42.44% 0.136 7.24);
-  --color-cta-highlighter: ;
-  --color-success-highlighter: ;
+
+  --color-button-primary: var(--color-gray-200);
+  --color-button-hover: var(--color-gray-300);
 }
 
 @layer utilities {
   .btn {
-    @apply w-[180] inline-flex items-center justify-center rounded-md px-4 py-2 border border-primary-800 bg-primary-800 text-white text-sm font-normal hover:cursor-pointer hover:font-bold;
+    @apply cursor-pointer min-w-[120px] h-fit flex flex-row justify-center place-content-center items-center p-2 border-2 border-button-primary bg-button-primary text-sm font-bold text-primary-800 rounded hover:bg-button-hover transition-colors;
   }
 
   .btnSecondry {
-    @apply w-[180] inline-flex items-center justify-center rounded-md px-4 py-2  text-primary-500 border border-primary-500 text-sm font-normal hover:cursor-pointer hover:font-bold;
+    @apply cursor-pointer min-w-[120px] h-fit flex flex-row justify-center place-content-center items-center p-2 border-2 border-button-primary text-sm font-bold text-primary-800 rounded hover:bg-button-hover transition-colors;
   }
 
   .labelText {
     @apply font-medium text-[15px];
+  }
+
+  .input-box {
+    @apply border p-2 min-w-[400px] border-gray-200 rounded-sm text-sm gap-1 focus:outline-none focus:border-primary-800
   }
 }
 

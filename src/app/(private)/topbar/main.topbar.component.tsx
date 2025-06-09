@@ -17,7 +17,7 @@ export default function MainTopBarComponent() {
   }
 
   return (
-    <div className="flex h-1/15  overflow-auto border-b border-background-dark">
+    <div className="flex max-h-10 py-4 border-b border-background-dark">
       <div className="flex flex-row justify-start w-full place-items-end">
         <div className="ml-4 self-center ">
           <p className="font-bold text-lg">Hello, Priyanshu!</p>
