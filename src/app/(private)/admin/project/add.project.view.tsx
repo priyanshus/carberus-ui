@@ -4,21 +4,24 @@ import SuccessMessageComponent from "@/app/resusable/feedback/success.message.co
 import PrimaryButtonComponent from "@/app/resusable/primary.button.component";
 import PrimaryInputBox from "@/app/resusable/primary.input.component";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { submitAddProjectForm } from "./service/project.service";
-import { AddProjectModel } from "./service/project";
+import { AddProjectModel, Project } from "./service/project";
 import getErrorMessage from "@/app/appConstants/app.errors.mapping";
 import LoadingSpinner from "@/app/resusable/loading.spinner.component";
 import ErrorMessageComponent from "@/app/resusable/feedback/error.message.component";
 import { User } from "@/app/service/user/user.model";
+import { NEW_PROJECT_CONSTANTS } from "@/shared/form/form.constants";
 
 interface AddProjectViewProps {
   users?: User[];
+  projects: Project[];
   open: boolean;
   onClose: () => void;
 }
 export default function AddProjectView({
   users,
+  projects,
   open,
   onClose,
 }: AddProjectViewProps) {
@@ -26,6 +29,8 @@ export default function AddProjectView({
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [isDuplicateTitle, setIsDuplicateTitle] = useState(false);
+  const [isDuplicateCode, setIsDuplicateCode] = useState(false);
 
   const isUserListInvalid = !users || users.length === 0;
 
@@ -36,16 +41,19 @@ export default function AddProjectView({
     members: [],
   });
 
+
+
   const mutation = useMutation({
     mutationFn: async (formData: AddProjectModel) => {
       return await submitAddProjectForm(formData);
     },
     onSuccess: () => {
       setLoading(false);
-      setSuccessMessage(`Project "${form.title}" added successfully.`);
+      setSuccessMessage(`${form.title} added successfully.`);
       queryClient.invalidateQueries({ queryKey: ["getAllProjects"] });
     },
     onError: (error: any) => {
+      console.error("Error adding project:", error);
       setLoading(false);
       const errorMessage = getErrorMessage(error.message);
       setErrorMessage(errorMessage);
@@ -56,6 +64,34 @@ export default function AddProjectView({
     e.preventDefault();
     setLoading(true);
     mutation.mutate(form);
+  };
+
+  const handleProjectTitleChange = (newTitle: string) => {
+    setForm({ ...form, title: newTitle });
+    if (newTitle.length > 0) {
+      const isDuplicate = projects.some((p) =>
+        p.title.toLowerCase().startsWith(newTitle.toLowerCase())
+      );
+      setIsDuplicateTitle(isDuplicate);
+    }
+    else {
+      setIsDuplicateTitle(false); 
+    }
+  };
+
+  const handleProjectCodeChange = (newCode: string) => {
+    setForm({ ...form, prefix: newCode });
+
+    if (newCode.length > 0) {
+      const isDuplicate = projects.some((p) => p.prefix.startsWith(newCode));
+
+      setIsDuplicateCode(isDuplicate);
+    }
+    else {
+      setIsDuplicateCode(false); 
+    }
+
+
   };
 
   if (isUserListInvalid) {
@@ -69,20 +105,22 @@ export default function AddProjectView({
   }
   return (
     <PopupCardComponent isOpen={open} onClose={onClose} title="Add Project">
-      <div className="w-full">
+      <div className="min-w-[600]">
         <form id="addProject" onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm text-primary-500 font-bold">
-              Name
+              Project Title
             </label>
             <div className="my-1">
               <PrimaryInputBox
                 id="title"
                 type="name"
+                maxLength={NEW_PROJECT_CONSTANTS.TITLE_MAX_LENGTH}
                 required
                 value={form.title}
-                onChange={(e) => setForm({ ...form, title: e })}
-                placeholder="Enter Name (max 50 characters)"
+                hasError={isDuplicateTitle}
+                onChange={(e) => handleProjectTitleChange(e)}
+                placeholder={`Enter Name (max ${NEW_PROJECT_CONSTANTS.TITLE_MAX_LENGTH} characters)`}
               />
             </div>
           </div>
@@ -92,13 +130,17 @@ export default function AddProjectView({
               Description
             </label>
             <div className="my-1">
-              <PrimaryInputBox
+              <textarea
+                maxLength={NEW_PROJECT_CONSTANTS.DESCRIPTION_MAX_LENGTH}
+                rows={3}
+                className="input-box w-full h-24"
                 id="description"
-                type="text"
                 required
                 value={form.description}
-                onChange={(e) => setForm({ ...form, description: e })}
-                placeholder="Enter Description (max 255 characters)"
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+                placeholder={`Enter Description (max ${NEW_PROJECT_CONSTANTS.DESCRIPTION_MAX_LENGTH} characters)`}
               />
             </div>
           </div>
@@ -111,14 +153,15 @@ export default function AddProjectView({
               <PrimaryInputBox
                 id="prefix"
                 type="text"
+                maxLength={NEW_PROJECT_CONSTANTS.PREFIX_MAX_LENGTH}
                 required
                 value={form.prefix}
-                onChange={(e) => setForm({ ...form, prefix: e })}
-                placeholder="Project Code (max 4 chars e.g., PRJ1)"
+                hasError={isDuplicateCode}
+                onChange={(e) => handleProjectCodeChange(e)}
+                placeholder={`Project Code (max ${NEW_PROJECT_CONSTANTS.PREFIX_MAX_LENGTH} characters)`}
               />
             </div>
           </div>
-
 
           {mutation.isPending && <LoadingSpinner />}
           <div className="flex flex-row gap-2 mt-10 justify-end">

@@ -40,3 +40,25 @@ export async function POST(req: Request): Promise<Response> {
     },
   });
 }
+
+export async function PUT(req: Request): Promise<Response> {
+  const endpoint = process.env.BACKEND_HOST + "/projects";
+  const cookie = req.headers.get("cookie") || "";
+  const payload = (await req.json()) || "";
+
+  const response = await bffFetch(endpoint, {
+    method: "PUT",
+    body: payload,
+    headers: {
+      cookie: cookie,
+    },
+  });
+
+  return new Response(response.body, {
+    status: response.status,
+    headers: {
+      "Content-Type":
+        response.headers.get("Content-Type") || "application/json",
+    },
+  });
+}

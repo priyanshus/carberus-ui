@@ -4,12 +4,15 @@ import PrimaryButtonComponent from "@/app/resusable/primary.button.component";
 import { useState } from "react";
 import AddProjectView from "./add.project.view";
 import { User } from "@/app/service/user/user.model";
+import { Project } from "./service/project";
 
 interface ProjectsViewHeaderProps {
   users?: User[];
+  projects?: Project[]
+  onFilter: (searchTerm: string) => void;
 }
 
-export default function ProjectsViewHeader({ users }: ProjectsViewHeaderProps) {
+export default function ProjectsViewHeader({ users, projects, onFilter }: ProjectsViewHeaderProps) {
   const [showAddProjectPopup, setShowAddProjectPopup] = useState(false);
 
   return (
@@ -28,7 +31,7 @@ export default function ProjectsViewHeader({ users }: ProjectsViewHeaderProps) {
       <input
         type="text"
         id="filterInput"
-        onChange={(e) => console.log("Search term:", e.target.value)}
+        onChange={(e) => onFilter(e.target.value)}
         placeholder="Search projects..."
         className="input-box mr-2"
       />
@@ -40,6 +43,7 @@ export default function ProjectsViewHeader({ users }: ProjectsViewHeaderProps) {
 
       {showAddProjectPopup && (
         <AddProjectView
+          projects={projects ?? []}
           users={users}
           open={showAddProjectPopup}
           onClose={() => setShowAddProjectPopup(false)}

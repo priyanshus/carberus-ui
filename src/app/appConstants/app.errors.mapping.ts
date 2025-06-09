@@ -6,6 +6,8 @@ const BFF_ERROR_MAP = new Map<string, string>([
     ['UNMAPPED', 'Something went wrong, try again.'],
     ['NO_USERS_FOUND', 'No users found in the system'],
     ['TEST_CYCLE_CLOSED', 'Testing cycle closed.'],
+
+    ['PROJECT_PREFIX_ALREADY_EXIST', 'Project code already exists, please try different.'],
     ['PROJECT_TITLE_ALREADY_EXIST', 'Project title already exists, please try different.'],
 ]);
 

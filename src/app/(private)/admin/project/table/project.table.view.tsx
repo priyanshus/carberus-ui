@@ -6,24 +6,22 @@ import {
   getSortedRowModel,
   flexRender,
   ColumnDef,
+  SortingState,
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { Project } from "../service/project";
-import {
-  TriangleDownIcon,
-  TriangleUpIcon,
-} from "@radix-ui/react-icons";
+import { TriangleDownIcon, TriangleUpIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
 import { ProjectActionsPopover } from "../project.actions.popover";
 
 type Props = {
   data: Project[];
   columns: ColumnDef<Project>[];
-  onActionSelect: (action: string, projectId: string) => void;
+  onActionSelect: (action: string, project: Project) => void;
 };
 
 export function ProjectsTable({ data, columns, onActionSelect }: Props) {
-  const [sorting, setSorting] = useState([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
     data,
@@ -89,9 +87,10 @@ export function ProjectsTable({ data, columns, onActionSelect }: Props) {
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   {cell.column.id === "ACTIONS" && (
                     <ProjectActionsPopover
-                      projectId={cell.row.original.id}
+                      project={cell.row.original}
                       onSelect={(action) => {
-                        onActionSelect(action, cell.row.original.id);
+                        console.log("Action selected:", cell.row.original, action);
+                        onActionSelect(action, cell.row.original);
                       }}
                     />
                   )}

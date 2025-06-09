@@ -6,7 +6,7 @@ import { Project } from "../service/project";
 export const projectColumns: ColumnDef<Project>[] = [
   {
     accessorKey: "title",
-    header: "NAME",
+    header: "PROJECT TITLE",
   },
   {
     accessorKey: "description",
@@ -15,6 +15,10 @@ export const projectColumns: ColumnDef<Project>[] = [
   {
     accessorKey: "prefix",
     header: "PREFIX",
+  },
+  {
+    accessorKey: "status",
+    header: "STATUS",
   },
   {
     accessorKey: "createdAt",

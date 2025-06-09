@@ -2,12 +2,13 @@ import { Popover,PopoverPanel,PopoverButton } from '@headlessui/react';
 import { DotsHorizontalIcon, DotsVerticalIcon } from '@radix-ui/react-icons'; 
 import { on } from 'events';
 import Link from 'next/link';
+import { Project } from './service/project';
 
 interface ProjectActionsPopoverProps {
-  projectId: string;
+  project: Project;
   onSelect: (action: string) => void;
 }
-export function ProjectActionsPopover({ projectId, onSelect }: ProjectActionsPopoverProps) {
+export function ProjectActionsPopover({ project, onSelect }: ProjectActionsPopoverProps) {
 
   return (
     <Popover className="relative">
@@ -32,16 +33,16 @@ export function ProjectActionsPopover({ projectId, onSelect }: ProjectActionsPop
           Assign Members
         </a>
         <Link
-          href={`/projects/${projectId}/edit`}
+          href={`/projects/edit`}
           className="px-4 py-2 hover:bg-background-higlighter"
         >
           View Members
         </Link>
         <button
-          onClick={() => console.log("Confirm delete:", projectId)}
+          onClick={() => console.log("Confirm delete:", project.id)}
           className="px-4 py-2 text-danger-higlighter hover:bg-danger-background-highlighter text-left"
         >
-          Deactivate
+          Archive
         </button>
       </PopoverPanel>
     </Popover>
