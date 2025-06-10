@@ -13,6 +13,7 @@ import { Project } from "../service/project";
 import { TriangleDownIcon, TriangleUpIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
 import { ProjectActionsPopover } from "../project.actions.popover";
+import StatusBadge from "@/app/resusable/status.badge.component";
 
 type Props = {
   data: Project[];
@@ -84,15 +85,23 @@ export function ProjectsTable({ data, columns, onActionSelect }: Props) {
                     cell.column.id === "title" && "text-primary-800 font-bold"
                   )}
                 >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  
                   {cell.column.id === "ACTIONS" && (
                     <ProjectActionsPopover
                       project={cell.row.original}
                       onSelect={(action) => {
-                        console.log("Action selected:", cell.row.original, action);
                         onActionSelect(action, cell.row.original);
                       }}
                     />
+                  )}
+
+                  {cell.column.id === "status" ? (
+                    <StatusBadge
+                      label={cell.getValue() as string}
+                      status={cell.getValue() as string}
+                    />
+                  ) : (
+                    flexRender(cell.column.columnDef.cell, cell.getContext())
                   )}
                 </td>
               ))}

@@ -1,7 +1,7 @@
 
 export interface Project {
     id: string;
-    title: string;
+    name: string;
     description: string;
     prefix: string;
     createdAt: string;
@@ -9,7 +9,7 @@ export interface Project {
 }
 
 export interface AddProjectModel {
-    title: string;
+    name: string;
     description: string;
     prefix: string;
     members: string[];
@@ -17,6 +17,6 @@ export interface AddProjectModel {
 
 export interface EditProjectModel {
     id: string;
-    title: string;
+    name: string;
     description: string;
 }

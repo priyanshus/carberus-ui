@@ -37,8 +37,8 @@ export async function submitEditProjectForm(payload: EditProjectModel) {
   }
 }
 
-export async function submitDeleteProject(id: string) {
-  const response = await clientFetch(`/api/projects${id}`, {
+export async function submitProjectStatusChange(id: string) {
+  const response = await clientFetch(`/api/projects/${id}`, {
     method: 'DELETE',
   });
 

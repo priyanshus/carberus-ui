@@ -26,7 +26,7 @@ export default function EditProjectView({
   const [successMessage, setSuccessMessage] = useState("");
   const [form, setForm] = useState<EditProjectModel>({
     id: "",
-    title: "",
+    name: "",
     description: "",
   });
 
@@ -36,18 +36,18 @@ export default function EditProjectView({
       setErrorMessage("");
       mutation.reset();
       setForm({
-        title: "",
+        name: "",
         id: "",
         description: "",
       });
     }
   }, [isOpen]);
 
-  const handleTitleChange = (value: string) => {
+  const handleNameChange = (value: string) => {
     setForm((prev) => ({
       ...prev,
       id: project?.id || "",
-      title: value,
+      name: value,
     }));
   };
 
@@ -57,7 +57,7 @@ export default function EditProjectView({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getAllProjects"] });
-      setSuccessMessage(`${form.title} updated successfully.`);
+      setSuccessMessage(`${form.name} updated successfully.`);
     },
     onError: (error: any) => {
       console.error("Error adding project:", error);
@@ -84,21 +84,20 @@ export default function EditProjectView({
     <PopupCardComponent
       isOpen={isOpen}
       onClose={() => onClose()}
-      title={`Edit ${project.title}`}
+      title={`Edit ${project.name}`}
     >
       <div className="min-w-[600]">
         <form id="editProjectForm">
           <div className="mb-4">
-            <label className="block text-sm text-primary-500 font-bold">
-              Project Title
-            </label>
             <div className="my-1">
               <PrimaryInputBox
-                id="title"
+                labelText="Project Name"
+                isMandatory={true}
+                id="name"
                 type="text"
                 required
-                placeholder={project.title}
-                onChange={(e) => handleTitleChange(e)}
+                placeholder={project.name}
+                onChange={(e) => handleNameChange(e)}
               />
             </div>
           </div>
@@ -123,6 +122,7 @@ export default function EditProjectView({
         <div className="flex flex-row justify-end mt-4">
           <PrimaryButtonComponent
             labelText="Update Project"
+            disabled={form.name.trim() === ''}
             onClickAction={() => mutation.mutate(form)}
           />
         </div>

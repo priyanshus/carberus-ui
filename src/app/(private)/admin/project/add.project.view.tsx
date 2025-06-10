@@ -29,19 +29,17 @@ export default function AddProjectView({
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [isDuplicateTitle, setIsDuplicateTitle] = useState(false);
+  const [isDuplicateName, setIsDuplicateName] = useState(false);
   const [isDuplicateCode, setIsDuplicateCode] = useState(false);
 
   const isUserListInvalid = !users || users.length === 0;
 
   const [form, setForm] = useState<AddProjectModel>({
-    title: "",
+    name: "",
     prefix: "",
     description: "",
     members: [],
   });
-
-
 
   const mutation = useMutation({
     mutationFn: async (formData: AddProjectModel) => {
@@ -49,7 +47,7 @@ export default function AddProjectView({
     },
     onSuccess: () => {
       setLoading(false);
-      setSuccessMessage(`${form.title} added successfully.`);
+      setSuccessMessage(`${form.name} added successfully.`);
       queryClient.invalidateQueries({ queryKey: ["getAllProjects"] });
     },
     onError: (error: any) => {
@@ -66,32 +64,27 @@ export default function AddProjectView({
     mutation.mutate(form);
   };
 
-  const handleProjectTitleChange = (newTitle: string) => {
-    setForm({ ...form, title: newTitle });
-    if (newTitle.length > 0) {
-      const isDuplicate = projects.some((p) =>
-        p.title.toLowerCase().startsWith(newTitle.toLowerCase())
-      );
-      setIsDuplicateTitle(isDuplicate);
-    }
-    else {
-      setIsDuplicateTitle(false); 
+  const handleProjectNameChange = (newName: string) => {
+    setForm({ ...form, name: newName });
+    setIsDuplicateCode(false);
+    if (newName.length > 0) {
+      console.log(projects);
+      const isDuplicate = projects.filter((p) => p.name.toLowerCase() === newName.toLowerCase()).length > 0;
+      setIsDuplicateName(isDuplicate);
+    } else {
+      setIsDuplicateName(false);
     }
   };
 
   const handleProjectCodeChange = (newCode: string) => {
     setForm({ ...form, prefix: newCode });
-
+    setIsDuplicateCode(false);
     if (newCode.length > 0) {
-      const isDuplicate = projects.some((p) => p.prefix.startsWith(newCode));
-
+      const isDuplicate = projects.filter((p) => p.prefix.toLowerCase() === newCode.toLowerCase()).length > 0;
       setIsDuplicateCode(isDuplicate);
+    } else {
+      setIsDuplicateCode(false);
     }
-    else {
-      setIsDuplicateCode(false); 
-    }
-
-
   };
 
   if (isUserListInvalid) {
@@ -108,21 +101,18 @@ export default function AddProjectView({
       <div className="min-w-[600]">
         <form id="addProject" onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm text-primary-500 font-bold">
-              Project Title
-            </label>
-            <div className="my-1">
-              <PrimaryInputBox
-                id="title"
-                type="name"
-                maxLength={NEW_PROJECT_CONSTANTS.TITLE_MAX_LENGTH}
-                required
-                value={form.title}
-                hasError={isDuplicateTitle}
-                onChange={(e) => handleProjectTitleChange(e)}
-                placeholder={`Enter Name (max ${NEW_PROJECT_CONSTANTS.TITLE_MAX_LENGTH} characters)`}
-              />
-            </div>
+            <PrimaryInputBox
+              id="name"
+              labelText="Project Name"
+              isMandatory={true}
+              type="name"
+              maxLength={NEW_PROJECT_CONSTANTS.NAME_MAX_LENGTH}
+              required
+              value={form.name}
+              hasError={isDuplicateName}
+              onChange={(e) => handleProjectNameChange(e)}
+              placeholder={`Enter Name (max ${NEW_PROJECT_CONSTANTS.NAME_MAX_LENGTH} characters)`}
+            />
           </div>
 
           <div className="mb-4">
@@ -146,27 +136,30 @@ export default function AddProjectView({
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm text-primary-500 font-bold">
-              Project Code
-            </label>
-            <div className="my-1">
-              <PrimaryInputBox
-                id="prefix"
-                type="text"
-                maxLength={NEW_PROJECT_CONSTANTS.PREFIX_MAX_LENGTH}
-                required
-                value={form.prefix}
-                hasError={isDuplicateCode}
-                onChange={(e) => handleProjectCodeChange(e)}
-                placeholder={`Project Code (max ${NEW_PROJECT_CONSTANTS.PREFIX_MAX_LENGTH} characters)`}
-              />
-            </div>
+            <PrimaryInputBox
+              id="prefix"
+              labelText="Project Code"
+              isMandatory={true}
+              type="text"
+              maxLength={NEW_PROJECT_CONSTANTS.PREFIX_MAX_LENGTH}
+              required
+              value={form.prefix}
+              hasError={isDuplicateCode}
+              onChange={(e) => handleProjectCodeChange(e)}
+              placeholder={`Project Code (max ${NEW_PROJECT_CONSTANTS.PREFIX_MAX_LENGTH} characters)`}
+            />
           </div>
 
           {mutation.isPending && <LoadingSpinner />}
           <div className="flex flex-row gap-2 mt-10 justify-end">
             <PrimaryButtonComponent
-              disabled={loading}
+              disabled={
+                loading ||
+                form.name.trim() === "" ||
+                isDuplicateName ||
+                isDuplicateCode ||
+                form.prefix.trim() === ""
+              }
               labelText="Add Project"
             />
           </div>

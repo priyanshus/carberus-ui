@@ -4,6 +4,8 @@ import clsx from "clsx";
 
 interface PrimaryInputBoxProps {
   id?: string;
+  labelText: string;
+  isMandatory?: boolean;
   placeholder?: string;
   type?: string;
   required?: boolean;
@@ -14,6 +16,8 @@ interface PrimaryInputBoxProps {
 }
 export default function PrimaryInputBox({
   id,
+  labelText,
+  isMandatory,
   placeholder,
   type = "text",
   required = true,
@@ -23,20 +27,26 @@ export default function PrimaryInputBox({
   onChange,
 }: PrimaryInputBoxProps) {
   return (
-    <input
-      type={type}
-      id={id}
-      required={required}
-      value={value}
-      maxLength={maxLength}
-      onChange={(e) => {
-        onChange && onChange(e.target.value);
-      }}
-      placeholder={placeholder}
-      className={clsx("w-full", {
-        "error-input-box": hasError,
-        "input-box": !hasError,
-      })}
-    />
+    <div>
+      <label className="block text-sm text-primary-500 font-bold mb-1" htmlFor={id}>
+        {labelText}{" "}
+        {isMandatory && <span className="text-danger-higlighter">*</span>}
+      </label>
+      <input
+        type={type}
+        id={id}
+        required={required}
+        value={value}
+        maxLength={maxLength}
+        onChange={(e) => {
+          onChange && onChange(e.target.value);
+        }}
+        placeholder={placeholder}
+        className={clsx("w-full", {
+          "error-input-box": hasError,
+          "input-box": !hasError,
+        })}
+      />
+    </div>
   );
 }

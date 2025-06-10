@@ -16,7 +16,8 @@
   --color-danger-background-highlighter: var(--color-red-100);
   --color-danger-light-background-highlighter: oklch(0.8796 0.0515 9.17);
 
-  --color-success-higlighter: oklch(61.69% 0.097 196.70);
+  --color-success-background-highlighter: oklch(0.972 0.032 145.32);
+  --color-success-higlighter: oklch(0.3588 0.1184 144.12);
   --color-danger-higlighter: oklch(42.44% 0.136 7.24);
 
   --color-button-primary: var(--color-gray-200);
@@ -30,6 +31,10 @@
 
   .btnSecondry {
     @apply cursor-pointer min-w-[120px] h-fit flex flex-row justify-center place-content-center items-center p-2 border-2 border-button-primary text-sm font-bold text-primary-800 rounded hover:bg-button-hover transition-colors;
+  }
+
+  .btn-danger {
+    @apply cursor-pointer min-w-[120px] h-fit flex flex-row justify-center place-content-center items-center p-2 border-2 border-danger-light-background-highlighter bg-danger-light-background-highlighter text-sm font-bold text-primary-800 rounded hover:bg-red-400 transition-colors;
   }
 
   .labelText {

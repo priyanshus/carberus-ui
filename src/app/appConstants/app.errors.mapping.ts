@@ -8,7 +8,8 @@ const BFF_ERROR_MAP = new Map<string, string>([
     ['TEST_CYCLE_CLOSED', 'Testing cycle closed.'],
 
     ['PROJECT_PREFIX_ALREADY_EXIST', 'Project code already exists, please try different.'],
-    ['PROJECT_TITLE_ALREADY_EXIST', 'Project title already exists, please try different.'],
+    ['PROJECT_NAME_ALREADY_EXIST', 'Project name already exists, please try different.'],
+    ['PROJECT_IN_ARCHIVED_STATE', 'Project is in archived state, cannot perform this action.'],
 ]);
 
 export default function getErrorMessage(errorCode: string): string {

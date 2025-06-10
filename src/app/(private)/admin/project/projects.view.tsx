@@ -1,8 +1,8 @@
 "use client";
 import CardComponent from "@/app/resusable/card-layout/card.component";
 import ProjectsViewHeader from "./projects.view.header";
-import { useQuery } from "@tanstack/react-query";
-import { fetchAllProjects } from "./service/project.service";
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchAllProjects, submitProjectStatusChange } from "./service/project.service";
 import LoadingSpinner from "@/app/resusable/loading.spinner.component";
 import { ProjectsTable } from "./table/project.table.view";
 import { projectColumns } from "./table/project.table.columns";
@@ -10,14 +10,21 @@ import { fetchUsers as fetchAllUsers } from "../user/service/user.service";
 import EditProjectView from "./edit.project.view";
 import { useEffect, useState } from "react";
 import { Project } from "./service/project";
+import ConfirmDialog from "@/app/resusable/confirmation.dialog.component";
+import getErrorMessage from "@/app/appConstants/app.errors.mapping";
+import ErrorMessageComponent from "@/app/resusable/feedback/error.message.component";
+
 
 export default function ProjectsView() {
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [project, setProject] = useState<Project | null>(null);
   const [showPopoverModal, setShowPopoverModal] = useState(false);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { isLoading, error, data } = useQuery({
+  const { isLoading, error, data, refetch } = useQuery({
     queryKey: ["getAllProjects"],
     queryFn: () => fetchAllProjects(),
   });
@@ -28,16 +35,35 @@ export default function ProjectsView() {
     }
   }, [data]);
 
+  useEffect(() => {
+    console.log("Delete success state changed:", deleteSuccess);
+    if (deleteSuccess) {
+      queryClient.refetchQueries({ queryKey: ["getAllProjects"] });
+      setDeleteSuccess(false); 
+    }
+  }, [deleteSuccess]);
+
+  const mutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await submitProjectStatusChange(id);
+    },
+    onSuccess: () => {
+      setDeleteSuccess(true);
+    },
+    onError: (error: any) => {
+      const errorMessage = getErrorMessage(error.message);
+      setErrorMessage(errorMessage);
+    },
+  });
 
   const handleFilterChange = (searchTerm: string) => {
     if (!data) return;
     else {
       const filtered = data.filter((p: Project) =>
-        p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.prefix.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      console.log("Filtered projects:", filtered);
       setFilteredProjects(filtered);
     }
   };
@@ -56,7 +82,6 @@ export default function ProjectsView() {
     setSelectedAction(action);
     setProject(project);
     setShowPopoverModal(true);
-    console.log("Action selected:", selectedAction, "for project:", project);
     if (action === "edit") {
       console.log("Edit action selected for project:", project);
     } else if (action === "assignMembers") {
@@ -68,6 +93,13 @@ export default function ProjectsView() {
     } else {
       console.log("No action selected for project:", project);
     }
+  }
+
+  function handleArchiveProject(project: Project) {
+    mutation.mutate(project.id);
+    setShowPopoverModal(false);
+    setSelectedAction(null);
+    setProject(null);
   }
 
   return (
@@ -93,15 +125,23 @@ export default function ProjectsView() {
       </div>
 
       {isLoading && <LoadingSpinner />}
-      {error && (
-        <p>Error loading projects, try again by refreshing the page.</p>
-      )}
+      { errorMessage && <ErrorMessageComponent message={errorMessage} />}
 
       {selectedAction && selectedAction === "edit" && (
         <EditProjectView
           project={project}
           isOpen={showPopoverModal}
           onClose={() => setShowPopoverModal(false)}
+        />
+      )}
+
+      {selectedAction && selectedAction === "archive" && (
+        <ConfirmDialog
+          title={`Archive Project ${project?.name}`}
+          open={showPopoverModal}
+          description="Are you sure you want to archive this project?"
+          onCancel={() => setShowPopoverModal(false)}
+          onConfirm={() => handleArchiveProject(project as Project)}
         />
       )}
     </CardComponent>
