@@ -1,19 +1,24 @@
 "use client";
 import CardComponent from "@/app/resusable/card-layout/card.component";
-import ProjectsViewHeader from "./projects.view.header";
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchAllProjects, submitProjectStatusChange } from "./service/project.service";
+import ProjectsViewHeader from "./ProjetViewHeader";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  fetchAllProjects,
+  submitProjectStatusChange,
+} from "../service/project.service";
 import LoadingSpinner from "@/app/resusable/loading.spinner.component";
-import { ProjectsTable } from "./table/project.table.view";
-import { projectColumns } from "./table/project.table.columns";
-import { fetchUsers as fetchAllUsers } from "../user/service/user.service";
-import EditProjectView from "./edit.project.view";
+import { ProjectsTable } from "./ProjectTableView";
+import { projectColumns } from "../hooks/projectTableColumns";
+import EditProjectView from "./EditProjectView";
 import { useEffect, useState } from "react";
-import { Project } from "./service/project";
+import { Project } from "../model/project";
 import ConfirmDialog from "@/app/resusable/confirmation.dialog.component";
 import getErrorMessage from "@/app/appConstants/app.errors.mapping";
 import ErrorMessageComponent from "@/app/resusable/feedback/error.message.component";
-
+import en from "@/copy/en";
+import { set } from "zod/v4-mini";
+import { NEW_PROJECT_CONSTANTS } from "@/shared/form/form.constants";
+import { PROJECT_STATUS } from "@/shared/appConstants";
 
 export default function ProjectsView() {
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
@@ -22,6 +27,7 @@ export default function ProjectsView() {
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [projectStatus, setProjectStatus] = useState<string>("");
   const queryClient = useQueryClient();
 
   const { isLoading, error, data, refetch } = useQuery({
@@ -36,16 +42,15 @@ export default function ProjectsView() {
   }, [data]);
 
   useEffect(() => {
-    console.log("Delete success state changed:", deleteSuccess);
     if (deleteSuccess) {
       queryClient.refetchQueries({ queryKey: ["getAllProjects"] });
-      setDeleteSuccess(false); 
+      setDeleteSuccess(false);
     }
   }, [deleteSuccess]);
 
   const mutation = useMutation({
-    mutationFn: async (id: string) => {
-      return await submitProjectStatusChange(id);
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      return await submitProjectStatusChange(id, status);
     },
     onSuccess: () => {
       setDeleteSuccess(true);
@@ -59,44 +64,31 @@ export default function ProjectsView() {
   const handleFilterChange = (searchTerm: string) => {
     if (!data) return;
     else {
-      const filtered = data.filter((p: Project) =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.prefix.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = data.filter(
+        (p: Project) =>
+          p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.prefix.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredProjects(filtered);
     }
   };
 
-  const {
-    isLoading: usersLoadingError,
-    error: errorUsers,
-    data: appUsers,
-  } = useQuery({
-    queryKey: ["getAllUsers"],
-    queryFn: () => fetchAllUsers(),
-    staleTime: 1000 * 60 * 5,
-  });
-
   function handleActionSelect(action: string, project: Project) {
-    setSelectedAction(action);
+    setErrorMessage("");
     setProject(project);
     setShowPopoverModal(true);
-    if (action === "edit") {
-      console.log("Edit action selected for project:", project);
-    } else if (action === "assignMembers") {
-      console.log("Assign Members action selected for project:", project);
-    } else if (action === "viewMembers") {
-      console.log("View Members action selected for project:", project);
-    } else if (action === "archive") {
-      console.log("Archived action selected for project:", project);
-    } else {
-      console.log("No action selected for project:", project);
+    setSelectedAction(action);
+
+    if (action === "archive") {
+      setProjectStatus(PROJECT_STATUS.ARCHIVED);
+    } else if (action === "activate") {
+      setProjectStatus(PROJECT_STATUS.ACTIVE);
     }
   }
 
-  function handleArchiveProject(project: Project) {
-    mutation.mutate(project.id);
+  function handleProjectStatusChange(project: Project) {
+    mutation.mutate({ id: project.id, status: projectStatus });
     setShowPopoverModal(false);
     setSelectedAction(null);
     setProject(null);
@@ -105,11 +97,7 @@ export default function ProjectsView() {
   return (
     <CardComponent
       header={
-        <ProjectsViewHeader
-          users={appUsers}
-          projects={data}
-          onFilter={handleFilterChange}
-        />
+        <ProjectsViewHeader projects={data} onFilter={handleFilterChange} />
       }
     >
       <div className="mt-8">
@@ -125,7 +113,7 @@ export default function ProjectsView() {
       </div>
 
       {isLoading && <LoadingSpinner />}
-      { errorMessage && <ErrorMessageComponent message={errorMessage} />}
+      {errorMessage && <ErrorMessageComponent message={errorMessage} />}
 
       {selectedAction && selectedAction === "edit" && (
         <EditProjectView
@@ -135,13 +123,23 @@ export default function ProjectsView() {
         />
       )}
 
-      {selectedAction && selectedAction === "archive" && (
+      {selectedAction === "archive" && (
         <ConfirmDialog
-          title={`Archive Project ${project?.name}`}
+          title={`${en.project.archive.title} ${project?.name}`}
           open={showPopoverModal}
-          description="Are you sure you want to archive this project?"
+          description={en.project.archive.description}
           onCancel={() => setShowPopoverModal(false)}
-          onConfirm={() => handleArchiveProject(project as Project)}
+          onConfirm={() => handleProjectStatusChange(project as Project)}
+        />
+      )}
+
+      {selectedAction === "activate" && (
+        <ConfirmDialog
+          title={`${en.project.activate.title} ${project?.name}`}
+          open={showPopoverModal}
+          description={en.project.activate.description}
+          onCancel={() => setShowPopoverModal(false)}
+          onConfirm={() => handleProjectStatusChange(project as Project)}
         />
       )}
     </CardComponent>

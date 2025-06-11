@@ -4,23 +4,23 @@ import SuccessMessageComponent from "@/app/resusable/feedback/success.message.co
 import PrimaryButtonComponent from "@/app/resusable/primary.button.component";
 import PrimaryInputBox from "@/app/resusable/primary.input.component";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { submitAddProjectForm } from "./service/project.service";
-import { AddProjectModel, Project } from "./service/project";
+import { useState } from "react";
+import { submitAddProjectForm } from "../service/project.service";
+import { AddProjectModel, Project } from "../model/project";
 import getErrorMessage from "@/app/appConstants/app.errors.mapping";
 import LoadingSpinner from "@/app/resusable/loading.spinner.component";
 import ErrorMessageComponent from "@/app/resusable/feedback/error.message.component";
-import { User } from "@/app/service/user/user.model";
 import { NEW_PROJECT_CONSTANTS } from "@/shared/form/form.constants";
+import { isAddProjectButtonDisabled, isProjectNameValid, isProjectPrefixValid } from "../hooks/projectFormRules";
+import en from "@/copy/en";
+
 
 interface AddProjectViewProps {
-  users?: User[];
   projects: Project[];
   open: boolean;
   onClose: () => void;
 }
 export default function AddProjectView({
-  users,
   projects,
   open,
   onClose,
@@ -32,7 +32,6 @@ export default function AddProjectView({
   const [isDuplicateName, setIsDuplicateName] = useState(false);
   const [isDuplicateCode, setIsDuplicateCode] = useState(false);
 
-  const isUserListInvalid = !users || users.length === 0;
 
   const [form, setForm] = useState<AddProjectModel>({
     name: "",
@@ -67,43 +66,23 @@ export default function AddProjectView({
   const handleProjectNameChange = (newName: string) => {
     setForm({ ...form, name: newName });
     setIsDuplicateCode(false);
-    if (newName.length > 0) {
-      console.log(projects);
-      const isDuplicate = projects.filter((p) => p.name.toLowerCase() === newName.toLowerCase()).length > 0;
-      setIsDuplicateName(isDuplicate);
-    } else {
-      setIsDuplicateName(false);
-    }
+    setIsDuplicateName(!isProjectNameValid(newName, projects));
   };
 
   const handleProjectCodeChange = (newCode: string) => {
     setForm({ ...form, prefix: newCode });
     setIsDuplicateCode(false);
-    if (newCode.length > 0) {
-      const isDuplicate = projects.filter((p) => p.prefix.toLowerCase() === newCode.toLowerCase()).length > 0;
-      setIsDuplicateCode(isDuplicate);
-    } else {
-      setIsDuplicateCode(false);
-    }
+    setIsDuplicateCode(!isProjectPrefixValid(newCode, projects));
   };
 
-  if (isUserListInvalid) {
-    return (
-      <PopupCardComponent isOpen={open} onClose={onClose} title="Add Project">
-        <div className="text-red-500 p-4">
-          <ErrorMessageComponent message="No users available to assign to the project. Please try after sometime or add users first." />
-        </div>
-      </PopupCardComponent>
-    );
-  }
   return (
-    <PopupCardComponent isOpen={open} onClose={onClose} title="Add Project">
+    <PopupCardComponent isOpen={open} onClose={onClose} title={en.project.addProjectLabel}>
       <div className="min-w-[600]">
         <form id="addProject" onSubmit={handleSubmit}>
           <div className="mb-4">
             <PrimaryInputBox
               id="name"
-              labelText="Project Name"
+              labelText={en.project.name}
               isMandatory={true}
               type="name"
               maxLength={NEW_PROJECT_CONSTANTS.NAME_MAX_LENGTH}
@@ -111,13 +90,13 @@ export default function AddProjectView({
               value={form.name}
               hasError={isDuplicateName}
               onChange={(e) => handleProjectNameChange(e)}
-              placeholder={`Enter Name (max ${NEW_PROJECT_CONSTANTS.NAME_MAX_LENGTH} characters)`}
+              placeholder={`${en.project.name} (${en.project.edit.nameLimit()})`}
             />
           </div>
 
           <div className="mb-4">
             <label className="block text-sm text-primary-500 font-bold">
-              Description
+            {en.project.description}
             </label>
             <div className="my-1">
               <textarea
@@ -130,7 +109,7 @@ export default function AddProjectView({
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
                 }
-                placeholder={`Enter Description (max ${NEW_PROJECT_CONSTANTS.DESCRIPTION_MAX_LENGTH} characters)`}
+                placeholder={`${en.project.description} (${en.project.edit.descriptionLimit()})`}
               />
             </div>
           </div>
@@ -138,7 +117,7 @@ export default function AddProjectView({
           <div className="mb-4">
             <PrimaryInputBox
               id="prefix"
-              labelText="Project Code"
+              labelText={en.project.code}
               isMandatory={true}
               type="text"
               maxLength={NEW_PROJECT_CONSTANTS.PREFIX_MAX_LENGTH}
@@ -146,7 +125,7 @@ export default function AddProjectView({
               value={form.prefix}
               hasError={isDuplicateCode}
               onChange={(e) => handleProjectCodeChange(e)}
-              placeholder={`Project Code (max ${NEW_PROJECT_CONSTANTS.PREFIX_MAX_LENGTH} characters)`}
+              placeholder={`${en.project.code} (${en.project.edit.prefixLimit()})`}
             />
           </div>
 
@@ -154,13 +133,11 @@ export default function AddProjectView({
           <div className="flex flex-row gap-2 mt-10 justify-end">
             <PrimaryButtonComponent
               disabled={
-                loading ||
-                form.name.trim() === "" ||
+                isAddProjectButtonDisabled(form) ||
                 isDuplicateName ||
-                isDuplicateCode ||
-                form.prefix.trim() === ""
+                isDuplicateCode
               }
-              labelText="Add Project"
+              labelText={en.project.addProjectLabel}
             />
           </div>
         </form>

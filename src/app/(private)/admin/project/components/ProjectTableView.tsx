@@ -9,11 +9,11 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { Project } from "../service/project";
 import { TriangleDownIcon, TriangleUpIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
-import { ProjectActionsPopover } from "../project.actions.popover";
 import StatusBadge from "@/app/resusable/status.badge.component";
+import { Project } from '../model/project';
+import { ProjectActionsPopover } from "./ProjectActionPopover";
 
 type Props = {
   data: Project[];

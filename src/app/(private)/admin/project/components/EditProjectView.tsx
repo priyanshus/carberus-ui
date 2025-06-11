@@ -4,11 +4,13 @@ import PrimaryButtonComponent from "@/app/resusable/primary.button.component";
 import PrimaryInputBox from "@/app/resusable/primary.input.component";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { submitEditProjectForm } from "./service/project.service";
-import { EditProjectModel, Project } from "./service/project";
+import { submitEditProjectForm } from "../service/project.service";
 import getErrorMessage from "@/app/appConstants/app.errors.mapping";
 import SuccessMessageComponent from "@/app/resusable/feedback/success.message.component";
 import ErrorMessageComponent from "@/app/resusable/feedback/error.message.component";
+import { Project, EditProjectModel } from '../model/project';
+import { NEW_PROJECT_CONSTANTS } from "@/shared/form/form.constants";
+import en from "@/copy/en";
 
 interface EditProjectViewProps {
   project: Project | null;
@@ -71,7 +73,7 @@ export default function EditProjectView({
       <PopupCardComponent
         isOpen={isOpen}
         onClose={() => onClose()}
-        title="Edit Project"
+        title={en.project.edit.title}
       >
         <div className="w-full">
           <p className="text-red-500">No project selected for editing.</p>
@@ -91,7 +93,9 @@ export default function EditProjectView({
           <div className="mb-4">
             <div className="my-1">
               <PrimaryInputBox
-                labelText="Project Name"
+                labelText={en.project.name}
+                maxLength={NEW_PROJECT_CONSTANTS.NAME_MAX_LENGTH}
+                value={form.name}
                 isMandatory={true}
                 id="name"
                 type="text"
@@ -104,8 +108,8 @@ export default function EditProjectView({
           <div className="mb-4">
             <label className="block text-sm text-primary-500 font-bold">
               <span>
-                Description{" "}
-                <span className="text-xs">(Max 100 characters)</span>
+                {en.project.description}
+                <span className="text-xs">{` (${en.project.edit.descriptionLimit()})`}</span>
               </span>
             </label>
             <div className="my-1">
@@ -121,7 +125,7 @@ export default function EditProjectView({
         </form>
         <div className="flex flex-row justify-end mt-4">
           <PrimaryButtonComponent
-            labelText="Update Project"
+            labelText={en.project.edit.updateProjectLabel}
             disabled={form.name.trim() === ''}
             onClickAction={() => mutation.mutate(form)}
           />

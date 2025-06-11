@@ -2,9 +2,9 @@
 
 import PrimaryButtonComponent from "@/app/resusable/primary.button.component";
 import { useState } from "react";
-import AddProjectView from "./add.project.view";
 import { User } from "@/app/service/user/user.model";
-import { Project } from "./service/project";
+import AddProjectView from "./AddProjectView";
+import { Project } from '../model/project';
 
 interface ProjectsViewHeaderProps {
   users?: User[];
@@ -44,7 +44,6 @@ export default function ProjectsViewHeader({ users, projects, onFilter }: Projec
       {showAddProjectPopup && (
         <AddProjectView
           projects={projects ?? []}
-          users={users}
           open={showAddProjectPopup}
           onClose={() => setShowAddProjectPopup(false)}
         />

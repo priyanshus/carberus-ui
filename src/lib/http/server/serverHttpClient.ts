@@ -30,7 +30,6 @@ export default async function bffFetch<TBody = unknown>(
     }
 
     try {
-        console.log("Fetching from BFF:", endpoint);
         logger.info(`Incoming Request: ${method} : ${endpoint}: ${fetchOptions.body}`);
         const response = await fetch(endpoint, fetchOptions);
 

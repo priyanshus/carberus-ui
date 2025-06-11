@@ -1,6 +1,6 @@
 import ErrorModel from "@/app/service/error/error.model";
 import clientFetch from "@/lib/http/client/clientHttpClient";
-import { AddProjectModel, EditProjectModel } from "./project";
+import { AddProjectModel, EditProjectModel } from "../model/project";
 
 export async function fetchAllProjects() {
   const response = await clientFetch("/api/projects", { method: "GET" });
@@ -37,9 +37,10 @@ export async function submitEditProjectForm(payload: EditProjectModel) {
   }
 }
 
-export async function submitProjectStatusChange(id: string) {
+export async function submitProjectStatusChange(id: string, payload: string) {
   const response = await clientFetch(`/api/projects/${id}`, {
-    method: 'DELETE',
+    method: 'PATCH',
+    body: {projectStatus: payload},
   });
 
   if (!response.ok) {

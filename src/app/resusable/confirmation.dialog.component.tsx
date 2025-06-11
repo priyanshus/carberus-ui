@@ -20,8 +20,8 @@ export default function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <PopupCardComponent isOpen={open} onClose={onCancel} title={title}>
-      <div className="flex py-2 text-danger-higlighter rounded-md">
-        <p>{description}</p>
+      <div className="flex p-4 bg-yellow-100 text-sm rounded-sm">
+        <p className="max-w-100 text-justify">{description}</p>
       </div>
       <div className="flex flex-row gap-2 justify-center w-100 mt-10">
         <button className="btnSecondry" onClick={onCancel}>Cancel</button>

@@ -1,8 +1,6 @@
 // components/projects.table.columns.ts
 import { ColumnDef } from "@tanstack/react-table";
-import { Project } from "../service/project";
-import StatusBadge from '@/app/resusable/status.badge.component';
-import { stat } from "fs";
+import { Project } from "../model/project";
 
 
 export const projectColumns: ColumnDef<Project>[] = [
